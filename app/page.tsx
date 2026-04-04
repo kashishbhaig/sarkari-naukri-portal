@@ -3,6 +3,14 @@ import Link from 'next/link';
 export default function Home() {
   const tests = [
     { 
+      id: "five_year_plans", 
+      title: "Five Year Plans (पंचवर्षीय योजनाएं)", 
+      questions: "50 Qs", 
+      tag: "ECONOMY", 
+      color: "from-purple-500 to-indigo-600",
+      desc: "SSC, Railway aur State exams ke liye 50 sabse mahatvapurn sawal."
+    },
+    { 
       id: "gandhi_era", 
       title: "Modern History: Gandhi Era", 
       questions: "25 Qs", 
@@ -41,7 +49,7 @@ export default function Home() {
       tag: "BIHAR EXAMS", 
       color: "from-yellow-500 to-red-700",
       desc: "BPSC aur Bihar Police ke liye 100% selection content."
-    }
+    },
   ];
 
   return (
@@ -54,7 +62,7 @@ export default function Home() {
             <div className="bg-gradient-to-br from-blue-600 to-indigo-700 text-white w-12 h-12 flex items-center justify-center rounded-2xl font-black text-2xl shadow-xl shadow-blue-200 group-hover:rotate-6 transition-transform">S</div>
             <div>
               <h1 className="text-2xl font-black text-slate-900 tracking-tighter leading-none">Sarkari Naukri Prayas</h1>
-              <span className="text-[11px] font-black text-blue-600 uppercase tracking-[0.2em] mt-1 block">Yudhistri Sir Academy</span>
+              <span className="text-[11px] font-black text-blue-600 uppercase tracking-[0.2em] mt-1 block">Arrav Sir Academy</span>
             </div>
           </div>
           <div className="hidden md:flex gap-8 text-sm font-bold text-slate-500 uppercase tracking-widest">
@@ -134,17 +142,16 @@ export default function Home() {
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12 items-center">
            <div className="text-left">
               <h4 className="text-xl font-black text-slate-900 mb-2">Sarkari Naukri Prayas</h4>
-              <p className="text-sm text-slate-500 font-medium leading-relaxed">India's most trusted platform for Bihar and UP Government Exam Preparation. Made with ❤️ by Yudhistri Sir.</p>
+              <p className="text-sm text-slate-500 font-medium leading-relaxed">India's most trusted platform for Bihar and UP Government Exam Preparation. Made with ❤️ by Arrav Sir.</p>
            </div>
            <div className="flex justify-center gap-6">
-              {/* Fake Social Icons or Links */}
               <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center font-bold text-slate-400 hover:bg-blue-600 hover:text-white transition-all cursor-pointer">YT</div>
               <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center font-bold text-slate-400 hover:bg-blue-600 hover:text-white transition-all cursor-pointer">TG</div>
               <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center font-bold text-slate-400 hover:bg-blue-600 hover:text-white transition-all cursor-pointer">IN</div>
            </div>
            <div className="text-right">
               <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">&copy; 2026 All Rights Reserved</p>
-              <p className="text-xs font-bold text-slate-800 mt-2 italic">Desinged for Selection.</p>
+              <p className="text-xs font-bold text-slate-800 mt-2 italic">Designed for Selection.</p>
            </div>
         </div>
       </footer>
