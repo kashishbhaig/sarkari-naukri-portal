@@ -21,7 +21,6 @@ function TestContent() {
   const [loading, setLoading] = useState(true);
   const [resultData, setResultData] = useState({ correct: 0, incorrect: 0, unattended: 0, total: 0 });
   
-  // Mobile Palette Toggle State
   const [isPaletteOpen, setIsPaletteOpen] = useState(false);
 
   const SHEET_URL = `https://docs.google.com/spreadsheets/d/1eMdE5uhdQXpA73_NO6MwJbMq7x_eI7C38jbqjzP1vtY/gviz/tq?tqx=out:csv&sheet=${testId}`;
@@ -63,9 +62,9 @@ function TestContent() {
     setIsSubmitted(true);
   };
 
-  if (loading) return <div className="h-screen flex items-center justify-center font-bold text-blue-600 animate-pulse uppercase tracking-widest italic">SNP Portal Loading...</div>;
+  if (loading) return <div className="h-screen flex items-center justify-center font-black text-blue-600 animate-pulse text-lg uppercase tracking-tighter italic">SNP Secure Server Connecting...</div>;
 
-  // --- RESULT VIEW WITH DETAILED ANSWER SHEET ---
+  // --- RESULT VIEW (SSC SCORECARD STYLE) ---
   if (isSubmitted) {
     const pieData = [
       { name: 'Correct', value: resultData.correct, color: '#22c55e' },
@@ -74,117 +73,129 @@ function TestContent() {
     ];
 
     return (
-      <div className="min-h-screen bg-slate-50 p-4 md:p-8 font-sans">
+      <div className="min-h-screen bg-slate-100 p-3 md:p-8 font-sans">
         <div className="max-w-5xl mx-auto">
-          {/* Performance Summary */}
-          <div className="bg-white rounded-3xl shadow-sm border p-6 mb-8 flex flex-col md:flex-row items-center justify-between">
-            <div className="text-center md:text-left">
-               <h2 className="text-3xl font-black text-slate-800 tracking-tight">ANALYSIS REPORT</h2>
-               <p className="text-sm font-bold text-blue-600 uppercase">Test ID: {testId}</p>
+          {/* SSC Official Header */}
+          <div className="bg-white border-t-4 border-orange-500 rounded-t-xl p-4 flex items-center gap-4 shadow-sm border-x border-b">
+             <div className="bg-orange-600 text-white p-2 rounded-lg font-black text-xl italic">SNP</div>
+             <div>
+                <h1 className="text-sm md:text-lg font-black text-slate-700 uppercase leading-none mb-1">Sarkari Naukri Prayas Examination Portal</h1>
+                <p className="text-[9px] md:text-xs font-bold text-slate-400 uppercase tracking-widest">Staff Selection Mock Result - Tier I</p>
+             </div>
+          </div>
+
+          {/* Candidate Profile Box */}
+          <div className="bg-white border-x border-b p-6 mb-6 shadow-sm rounded-b-xl">
+            <div className="bg-orange-50 px-4 py-1 mb-5 border-l-4 border-orange-500 flex justify-between items-center">
+                <span className="text-[10px] font-black text-orange-700 uppercase italic">Candidate Dashboard</span>
+                <span className="text-[9px] font-bold text-orange-400 uppercase">Status: Published</span>
             </div>
-            <div className="flex gap-6 mt-6 md:mt-0">
-               <div className="text-center">
-                  <p className="text-3xl font-black text-blue-600">{score}</p>
-                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Score</p>
-               </div>
-               <div className="text-center border-l pl-6">
-                  <p className="text-3xl font-black text-slate-800">{questions.length}</p>
-                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Total</p>
-               </div>
-               <div className="text-center border-l pl-6">
-                  <p className="text-3xl font-black text-green-500">{Math.round((score/questions.length)*100)}%</p>
-                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Success</p>
-               </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-y-6 gap-x-4 text-[10px] md:text-xs">
+                <div><p className="text-slate-400 font-bold uppercase mb-1">Registration No</p><p className="font-black text-slate-800">SNP-2026-X88</p></div>
+                <div><p className="text-slate-400 font-bold uppercase mb-1">Candidate Name</p><p className="font-black text-slate-800 uppercase italic">Arav Sir Student</p></div>
+                <div><p className="text-slate-400 font-bold uppercase mb-1">Subject</p><p className="font-black text-slate-800 uppercase">{testId.replace('_', ' ')}</p></div>
+                <div><p className="text-slate-400 font-bold uppercase mb-1">Exam Date</p><p className="font-black text-slate-800">{new Date().toLocaleDateString('en-GB')}</p></div>
             </div>
           </div>
 
-          <div className="bg-white p-6 rounded-3xl shadow-sm border mb-8 h-80">
-             <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                   <Pie data={pieData} innerRadius={60} outerRadius={80} dataKey="value" paddingAngle={5}>
-                      {pieData.map((e, i) => <Cell key={i} fill={e.color} />)}
-                   </Pie>
-                   <Tooltip />
-                   <Legend verticalAlign="bottom" height={36}/>
-                </PieChart>
-             </ResponsiveContainer>
+          {/* SSC Style Marks Table */}
+          <div className="bg-white rounded-xl shadow-lg overflow-hidden border mb-8">
+            <div className="bg-slate-800 text-white px-6 py-3 flex justify-between items-center">
+                <h2 className="text-xs font-black uppercase tracking-widest">Score Summary</h2>
+                <span className="text-[9px] opacity-60">Report Generated Successfully</span>
+            </div>
+            <div className="overflow-x-auto">
+                <table className="w-full text-[11px] md:text-sm text-center border-collapse">
+                    <thead className="bg-slate-50 text-slate-500 font-black uppercase tracking-tighter border-b">
+                        <tr>
+                            <th className="p-4 border-r">Section</th>
+                            <th className="p-4 border-r">Total Qs</th>
+                            <th className="p-4 border-r text-green-600">Right</th>
+                            <th className="p-4 border-r text-red-500">Wrong</th>
+                            <th className="p-4 border-r text-blue-600 font-black">Score</th>
+                            <th className="p-4 text-orange-600">Accuracy</th>
+                        </tr>
+                    </thead>
+                    <tbody className="font-bold text-slate-700">
+                        <tr className="hover:bg-slate-50 transition-colors">
+                            <td className="p-4 border-r italic text-left pl-6">{testId.toUpperCase()}</td>
+                            <td className="p-4 border-r">{questions.length}</td>
+                            <td className="p-4 border-r text-green-600">{resultData.correct}</td>
+                            <td className="p-4 border-r text-red-500">{resultData.incorrect}</td>
+                            <td className="p-4 border-r text-blue-700 bg-blue-50/30 text-lg">{score}.00</td>
+                            <td className="p-4 text-orange-700 bg-orange-50/20">{Math.round((score/questions.length)*100)}%</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
           </div>
 
-          {/* DETAILED REVIEW SECTION */}
-          <h3 className="text-xl font-black text-slate-800 mb-6 px-2 uppercase italic border-l-4 border-blue-600 pl-4">Review Your Answers</h3>
+          {/* Detailed Question Review */}
+          <h3 className="text-lg font-black text-slate-800 mb-6 uppercase border-b-2 border-slate-800 pb-2 flex justify-between items-center italic">
+            <span>Review Question Paper</span>
+            <span className="text-[10px] bg-red-600 text-white px-2 py-0.5 rounded animate-pulse">Official Key</span>
+          </h3>
           
-          <div className="space-y-6 mb-10">
+          <div className="space-y-4 mb-10">
             {questions.map((q, i) => (
-              <div key={i} className={`bg-white rounded-2xl border-l-8 shadow-sm p-6 transition-all ${
-                !answers[i] ? 'border-l-slate-300' : 
-                answers[i] === q.correctAnswer ? 'border-l-green-500' : 'border-l-red-500'
-              }`}>
+              <div key={i} className="bg-white border rounded-xl p-5 hover:border-blue-400 transition-all shadow-sm">
                 <div className="flex justify-between items-center mb-4">
-                  <span className="bg-slate-100 text-slate-600 text-[10px] font-black px-3 py-1 rounded-full uppercase">Question {i + 1}</span>
-                  {answers[i] === q.correctAnswer ? 
-                    <span className="text-green-600 font-black text-[10px] bg-green-50 px-2 py-1 rounded italic uppercase">Correct</span> : 
-                    !answers[i] ? <span className="text-slate-400 font-black text-[10px] bg-slate-50 px-2 py-1 rounded italic uppercase">Skipped</span> : 
-                    <span className="text-red-500 font-black text-[10px] bg-red-50 px-2 py-1 rounded italic uppercase">Incorrect</span>
-                  }
+                  <span className="font-black text-slate-400 text-[10px] uppercase">Item #{i + 1}</span>
+                  <div className="flex gap-2">
+                    <span className={`text-[9px] font-black uppercase px-2 py-1 rounded shadow-sm ${answers[i] === q.correctAnswer ? 'bg-green-600 text-white' : 'bg-red-500 text-white'}`}>
+                        {answers[i] === q.correctAnswer ? 'Correct' : 'Wrong'}
+                    </span>
+                  </div>
                 </div>
 
-                <p className="font-bold text-slate-800 text-base mb-6 leading-relaxed">
+                <p className="font-bold text-slate-800 mb-6 text-sm md:text-base leading-relaxed">
                   {q?.[`q_${lang}`]}
                 </p>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {/* User Selection */}
-                  <div className={`p-4 rounded-xl border-2 ${
-                    !answers[i] ? 'bg-slate-50 border-slate-100' : 
-                    answers[i] === q.correctAnswer ? 'bg-green-50 border-green-100' : 'bg-red-50 border-red-100'
-                  }`}>
-                    <p className="text-[9px] font-black text-slate-400 uppercase mb-2">Your Response</p>
-                    <p className="font-bold text-sm">
-                        {answers[i] ? `${answers[i]}. ${q?.[`${answers[i].toLowerCase()}_${lang}`]}` : 'Not Answered'}
-                    </p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                  <div className={`p-4 rounded-lg border-2 ${answers[i] === q.correctAnswer ? 'bg-green-50/50 border-green-200' : 'bg-red-50/50 border-red-100'}`}>
+                    <p className="text-[9px] font-black text-slate-400 uppercase mb-2">Student Response</p>
+                    <p className="font-bold">{answers[i] ? `${answers[i]}. ${q?.[`${answers[i].toLowerCase()}_${lang}`]}` : <span className="italic text-slate-300">Skipped</span>}</p>
                   </div>
-
-                  {/* Correct Answer */}
-                  <div className="p-4 rounded-xl border-2 border-green-200 bg-green-50">
-                    <p className="text-[9px] font-black text-green-400 uppercase mb-2">Correct Answer</p>
-                    <p className="font-bold text-sm text-green-800">
-                      {q.correctAnswer}. {q?.[`${q.correctAnswer.toLowerCase()}_${lang}`]}
-                    </p>
+                  <div className="p-4 rounded-lg border-2 border-blue-100 bg-blue-50/50">
+                    <p className="text-[9px] font-black text-blue-400 uppercase mb-2">Verified Answer</p>
+                    <p className="font-bold text-blue-800">{q.correctAnswer}. {q?.[`${q.correctAnswer.toLowerCase()}_${lang}`]}</p>
                   </div>
                 </div>
 
                 {q.explanation && (
-                  <div className="mt-5 p-4 bg-blue-50/50 rounded-xl border border-blue-100 text-xs text-slate-600 italic">
-                    <span className="font-black text-blue-600 not-italic uppercase mr-2 underline">Note:</span> {q.explanation}
+                  <div className="mt-4 p-4 bg-slate-50 rounded-lg border-l-4 border-slate-300">
+                    <p className="text-[9px] font-black text-slate-400 uppercase mb-1">Explanation</p>
+                    <p className="text-xs text-slate-600 font-medium italic">{q.explanation}</p>
                   </div>
                 )}
               </div>
             ))}
           </div>
 
-          <button onClick={() => window.location.href='/'} className="w-full bg-slate-900 text-white py-5 rounded-2xl font-black hover:bg-blue-600 transition-all uppercase tracking-widest shadow-xl mb-20">Close Analysis</button>
+          <button onClick={() => window.location.href='/'} className="w-full bg-slate-900 text-white py-5 rounded-2xl font-black hover:bg-orange-600 transition-all uppercase tracking-widest text-xs shadow-2xl mb-20">Back to Home Screen</button>
         </div>
       </div>
     );
   }
 
-  // --- MAIN EXAM UI ---
+  // --- MAIN EXAM SCREEN ---
   const q = questions[currentQ];
 
   return (
-    <div className="h-screen flex flex-col bg-slate-50 overflow-hidden font-sans select-none relative">
+    <div className="h-screen flex flex-col bg-slate-50 overflow-hidden font-sans select-none relative text-slate-800">
       
-      {/* Header */}
+      {/* HEADER */}
       <header className="bg-white border-b px-4 py-3 flex justify-between items-center shadow-sm z-[100]">
         <div className="flex items-center gap-2">
-          <div className="bg-blue-600 text-white px-3 py-1 rounded-md font-black text-sm tracking-tighter">SNP</div>
-          <span className="hidden sm:inline text-[10px] font-bold uppercase text-slate-400 border-l pl-2">{testId}</span>
+          <div className="bg-blue-600 text-white px-3 py-1 rounded font-black text-sm italic">SNP</div>
+          <span className="hidden sm:inline text-[10px] font-black uppercase tracking-widest text-slate-300 border-l pl-2">{testId}</span>
         </div>
-        <div className="flex items-center gap-3">
-          <select value={lang} onChange={(e) => setLang(e.target.value)} className="bg-slate-100 text-[10px] font-black px-3 py-1.5 rounded-full border-none outline-none uppercase shadow-inner">
+        <div className="flex items-center gap-2">
+          <select value={lang} onChange={(e) => setLang(e.target.value)} className="bg-slate-100 text-[10px] font-black px-3 py-1.5 rounded-full outline-none uppercase shadow-inner">
             <option value="hi">Hindi</option><option value="en">English</option><option value="hg">Hinglish</option>
           </select>
-          <div className="bg-slate-900 text-white px-4 py-1.5 rounded-full font-mono font-black text-sm shadow-lg">
+          <div className="bg-slate-900 text-white px-4 py-1.5 rounded-full font-mono font-black text-sm shadow-md">
             {Math.floor(timeLeft / 60)}:{('0' + (timeLeft % 60)).slice(-2)}
           </div>
         </div>
@@ -192,44 +203,44 @@ function TestContent() {
 
       <div className="flex-1 flex flex-col lg:flex-row overflow-hidden relative">
         
-        {/* Question Panel */}
-        <div className="flex-1 flex flex-col bg-white overflow-hidden border-r">
+        {/* QUESTION PANEL */}
+        <div className="flex-1 flex flex-col bg-white overflow-hidden border-r shadow-inner">
           <div className="bg-slate-50/50 px-6 py-2 border-b text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] flex justify-between">
-            <span>Question {currentQ + 1} of {questions.length}</span>
-            <span>+1.0 Correct | -0.0 Wrong</span>
+            <span>Question {currentQ + 1} / {questions.length}</span>
+            <span>Marks: 1.0</span>
           </div>
           
           <div className="flex-1 p-6 lg:p-12 overflow-y-auto">
             <div className="max-w-3xl mx-auto">
-                <h2 className="text-lg md:text-2xl font-bold text-slate-800 mb-10 leading-snug">
+                <h2 className="text-lg md:text-2xl font-bold text-slate-800 mb-8 leading-snug">
                 {q?.[`q_${lang}`]}
                 </h2>
-                <div className="space-y-4">
+                <div className="space-y-3">
                 {['a', 'b', 'c', 'd'].map(opt => (
-                    <label key={opt} className={`group flex items-center gap-4 p-5 border-2 rounded-2xl cursor-pointer transition-all duration-200 ${answers[currentQ] === opt.toUpperCase() ? 'bg-blue-50 border-blue-600 shadow-md ring-1 ring-blue-600' : 'hover:bg-slate-50 border-slate-100 hover:border-slate-200'}`}>
+                    <label key={opt} className={`group flex items-center gap-4 p-5 border-2 rounded-2xl cursor-pointer transition-all duration-200 ${answers[currentQ] === opt.toUpperCase() ? 'bg-blue-50 border-blue-600 shadow-md ring-1 ring-blue-600' : 'hover:bg-slate-50 border-slate-100 hover:border-slate-300'}`}>
                     <input type="radio" checked={answers[currentQ] === opt.toUpperCase()} onChange={() => setAnswers({...answers, [currentQ]: opt.toUpperCase()})} className="hidden" />
-                    <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${answers[currentQ] === opt.toUpperCase() ? 'border-blue-600 bg-blue-600' : 'border-slate-200 bg-white'}`}>
-                        {answers[currentQ] === opt.toUpperCase() && <div className="w-2 h-2 bg-white rounded-full" />}
+                    <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${answers[currentQ] === opt.toUpperCase() ? 'border-blue-600 bg-blue-600' : 'border-slate-200 bg-white'}`}>
+                        {answers[currentQ] === opt.toUpperCase() && <div className="w-1.5 h-1.5 bg-white rounded-full" />}
                     </div>
-                    <span className={`text-sm font-black ${answers[currentQ] === opt.toUpperCase() ? 'text-blue-600' : 'text-slate-300'}`}>{opt.toUpperCase()}.</span>
-                    <span className="text-sm md:text-base font-semibold text-slate-700">{q?.[`${opt}_${lang}`]}</span>
+                    <span className={`text-xs font-black ${answers[currentQ] === opt.toUpperCase() ? 'text-blue-600' : 'text-slate-300'}`}>{opt.toUpperCase()}.</span>
+                    <span className="text-sm md:text-base font-bold text-slate-600 group-hover:text-slate-900 transition-colors">{q?.[`${opt}_${lang}`]}</span>
                     </label>
                 ))}
                 </div>
             </div>
           </div>
           
-          {/* Controls */}
+          {/* FOOTER */}
           <footer className="p-4 bg-white border-t flex justify-between items-center px-6 lg:px-12">
-            <button onClick={() => setCurrentQ(Math.max(0, currentQ - 1))} className="text-[10px] font-black text-slate-400 hover:text-slate-900 transition-colors uppercase tracking-widest">Previous</button>
+            <button onClick={() => setCurrentQ(Math.max(0, currentQ - 1))} className="text-[10px] font-black text-slate-400 hover:text-slate-900 transition-colors uppercase tracking-[0.2em]">Previous</button>
             <div className="flex gap-4">
-                <button onClick={() => setAnswers({...answers, [currentQ]: null})} className="hidden md:block text-[10px] font-black text-red-400 uppercase hover:text-red-600">Clear</button>
-                <button onClick={handleSaveAndNext} className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-xl font-black text-xs uppercase tracking-widest shadow-xl transition-all transform active:scale-95">Save & Next</button>
+                <button onClick={() => setAnswers({...answers, [currentQ]: null})} className="hidden md:block text-[10px] font-black text-red-300 uppercase hover:text-red-500">Clear</button>
+                <button onClick={handleSaveAndNext} className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest shadow-lg transition-transform active:scale-95">Save & Next</button>
             </div>
           </footer>
         </div>
 
-        {/* SIDEBAR PALETTE (Desktop default, Mobile hidden) */}
+        {/* SIDEBAR PALETTE (TCS STYLE) */}
         <div className={`
           fixed lg:relative top-0 right-0 h-full lg:h-auto z-[110] lg:z-0
           w-72 md:w-80 bg-slate-50 shadow-2xl lg:shadow-none transition-transform duration-300 ease-in-out border-l
@@ -239,20 +250,20 @@ function TestContent() {
           <div className="p-5 flex flex-col h-full">
             <div className="flex items-center justify-between mb-8">
                 <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-slate-900 text-white rounded-xl flex items-center justify-center font-black text-xs">YS</div>
-                    <div><p className="font-black text-xs text-slate-800 leading-none mb-1 uppercase">Candidate</p><p className="text-[9px] font-bold text-slate-400 uppercase tracking-tighter">Mock Series #01</p></div>
+                    <div className="w-10 h-10 bg-slate-900 text-white rounded-xl flex items-center justify-center font-black text-xs shadow-lg">RA</div>
+                    <div><p className="font-black text-xs text-slate-800 leading-none mb-1 uppercase tracking-tighter">Arrav Sir Student</p><p className="text-[9px] font-bold text-slate-400 uppercase tracking-tighter italic">Official Aspirant</p></div>
                 </div>
                 <button onClick={() => setIsPaletteOpen(false)} className="lg:hidden w-8 h-8 flex items-center justify-center bg-white rounded-full text-slate-400 font-bold shadow-sm">✕</button>
             </div>
 
-            <div className="flex-1 overflow-y-auto pr-1">
-                <p className="text-[10px] font-black text-slate-300 uppercase mb-4 tracking-widest">Question Palette</p>
+            <div className="flex-1 overflow-y-auto pr-1 scrollbar-hide">
+                <p className="text-[10px] font-black text-slate-300 uppercase mb-4 tracking-widest border-b pb-2">Question Navigation</p>
                 <div className="grid grid-cols-5 gap-2">
                 {questions.map((_, i) => (
                     <button 
                     key={i} 
                     onClick={() => { setCurrentQ(i); setIsPaletteOpen(false); }} 
-                    className={`h-10 w-10 rounded-xl font-black text-[11px] transition-all flex items-center justify-center border-2 ${currentQ === i ? 'border-blue-600 ring-2 ring-blue-100 bg-white text-blue-600' : status[i] === 'answered' ? 'bg-green-500 border-green-500 text-white shadow-md' : status[i] === 'not_answered' ? 'bg-red-500 border-red-500 text-white' : 'bg-white border-slate-100 text-slate-400'}`}
+                    className={`h-10 w-10 rounded-xl font-black text-[11px] transition-all flex items-center justify-center border-2 ${currentQ === i ? 'border-blue-600 ring-2 ring-blue-50 bg-white text-blue-600 shadow-md' : status[i] === 'answered' ? 'bg-green-500 border-green-500 text-white shadow-sm' : status[i] === 'not_answered' ? 'bg-red-500 border-red-500 text-white' : 'bg-white border-slate-100 text-slate-400'}`}
                     >
                     {i + 1}
                     </button>
@@ -264,13 +275,13 @@ function TestContent() {
           </div>
         </div>
 
-        {/* Mobile Backdrop */}
+        {/* MOBILE OVERLAY */}
         {isPaletteOpen && (
-          <div onClick={() => setIsPaletteOpen(false)} className="lg:hidden fixed inset-0 bg-slate-900/40 backdrop-blur-md z-[105]" />
+          <div onClick={() => setIsPaletteOpen(false)} className="lg:hidden fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[105]" />
         )}
       </div>
 
-      {/* Floating Toggle Button (Mobile Only) */}
+      {/* FLOATING TOGGLE BUTTON (MOBILE) */}
       <button 
         onClick={() => setIsPaletteOpen(!isPaletteOpen)}
         className="lg:hidden fixed bottom-6 right-6 z-[120] bg-slate-900 text-white w-14 h-14 rounded-2xl shadow-2xl flex items-center justify-center border-2 border-white/20 transform active:scale-90 transition-transform"
@@ -283,5 +294,5 @@ function TestContent() {
 }
 
 export default function TestPage() {
-  return <Suspense fallback={<div className="h-screen flex items-center justify-center font-black text-blue-600 animate-pulse text-sm uppercase">Loading Secure Portal...</div>}><TestContent /></Suspense>;
+  return <Suspense fallback={<div className="h-screen flex items-center justify-center font-black text-blue-600 animate-pulse text-sm uppercase">Secure Portal Launching...</div>}><TestContent /></Suspense>;
 }
