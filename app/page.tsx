@@ -66,9 +66,8 @@ export default function Home() {
             </div>
           </div>
           <div className="hidden md:flex gap-8 text-sm font-bold text-slate-500 uppercase tracking-widest">
-             <span className="hover:text-blue-600 cursor-pointer transition-colors">Courses</span>
-             <span className="hover:text-blue-600 cursor-pointer transition-colors">Current Affairs</span>
-             <span className="hover:text-blue-600 cursor-pointer transition-colors">Contact</span>
+             <Link href="/about" className="hover:text-blue-600 cursor-pointer transition-colors">Courses</Link>
+             <Link href="/contact" className="hover:text-blue-600 cursor-pointer transition-colors">Contact</Link>
           </div>
         </div>
       </nav>
@@ -139,20 +138,30 @@ export default function Home() {
 
       {/* --- TRUST FOOTER --- */}
       <footer className="bg-white border-t border-slate-200 py-16 px-6">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12 items-center">
-           <div className="text-left">
-              <h4 className="text-xl font-black text-slate-900 mb-2">Sarkari Naukri Prayas</h4>
-              <p className="text-sm text-slate-500 font-medium leading-relaxed">India's most trusted platform for Bihar and UP Government Exam Preparation. Made with ❤️ by Arrav Sir.</p>
-           </div>
-           <div className="flex justify-center gap-6">
-              <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center font-bold text-slate-400 hover:bg-blue-600 hover:text-white transition-all cursor-pointer">YT</div>
-              <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center font-bold text-slate-400 hover:bg-blue-600 hover:text-white transition-all cursor-pointer">TG</div>
-              <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center font-bold text-slate-400 hover:bg-blue-600 hover:text-white transition-all cursor-pointer">IN</div>
-           </div>
-           <div className="text-right">
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">&copy; 2026 All Rights Reserved</p>
-              <p className="text-xs font-bold text-slate-800 mt-2 italic">Designed for Selection.</p>
-           </div>
+        <div className="max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 items-center">
+             <div className="text-left">
+                <h4 className="text-xl font-black text-slate-900 mb-2">Sarkari Naukri Prayas</h4>
+                <p className="text-sm text-slate-500 font-medium leading-relaxed">India&apos;s most trusted platform for Bihar and UP Government Exam Preparation. Made with ❤️ by Arrav Sir.</p>
+             </div>
+             <div className="flex justify-center gap-6">
+                <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center font-bold text-slate-400 hover:bg-blue-600 hover:text-white transition-all cursor-pointer">YT</div>
+                <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center font-bold text-slate-400 hover:bg-blue-600 hover:text-white transition-all cursor-pointer">TG</div>
+                <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center font-bold text-slate-400 hover:bg-blue-600 hover:text-white transition-all cursor-pointer">IN</div>
+             </div>
+             <div className="text-right">
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">&copy; 2026 All Rights Reserved</p>
+                <p className="text-xs font-bold text-slate-800 mt-2 italic">Designed for Selection.</p>
+             </div>
+          </div>
+
+          {/* ADSENSE MANDATORY PAGES LINKS */}
+          <div className="flex flex-wrap justify-center gap-x-8 gap-y-4 mt-12 py-8 border-t border-slate-200">
+            <Link href="/about" className="text-[10px] font-black text-slate-400 hover:text-blue-600 uppercase tracking-widest transition-colors">About Us</Link>
+            <Link href="/contact" className="text-[10px] font-black text-slate-400 hover:text-blue-600 uppercase tracking-widest transition-colors">Contact</Link>
+            <Link href="/privacy" className="text-[10px] font-black text-slate-400 hover:text-blue-600 uppercase tracking-widest transition-colors">Privacy Policy</Link>
+            <Link href="/terms" className="text-[10px] font-black text-slate-400 hover:text-blue-600 uppercase tracking-widest transition-colors">Terms</Link>
+          </div>
         </div>
       </footer>
     </div>
