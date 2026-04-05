@@ -3,6 +3,14 @@ import Link from 'next/link';
 export default function Home() {
   const tests = [
     { 
+  id: "simulator_02_gs", 
+  title: "BPSC Simulator-2: GS Special", 
+  questions: "100 Qs", 
+  tag: "BPSC", 
+  color: "from-red-600 to-orange-700",
+  desc: "Latest March 2026 pattern based General Studies mock test."
+},
+    { 
   id: "bihar_budget", 
   title: "Bihar Budget & Eco Survey 2024-25", 
   questions: "50 Qs", 
