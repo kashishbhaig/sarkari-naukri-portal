@@ -3,6 +3,14 @@ import Link from 'next/link';
 export default function Home() {
   const tests = [
     { 
+  id: "bihar_budget", 
+  title: "Bihar Budget & Eco Survey 2024-25", 
+  questions: "50 Qs", 
+  tag: "BIHAR SPECIAL", 
+  color: "from-emerald-500 to-teal-700",
+  desc: "BPSC aur Bihar State exams ke liye sabse important current data."
+},
+    { 
       id: "five_year_plans", 
       title: "Five Year Plans (पंचवर्षीय योजनाएं)", 
       questions: "50 Qs", 
