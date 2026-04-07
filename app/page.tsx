@@ -2,6 +2,15 @@ import Link from 'next/link';
 
 export default function Home() {
   const tests = [
+ { 
+      id: "NTPC_GS", 
+      title: "NTPC_GS: PYQ", 
+      questions: "916 Qs", 
+      tag: "NTPC_GS", 
+      color: "from-indigo-500 to-purple-700",
+      desc: "High-yield Maths and Reasoning questions for sure-shot selection."
+    },
+    
     { 
       id: "simulator_02_aptitude", 
       title: "BPSC Simulator-2: Aptitude & Reasoning", 
