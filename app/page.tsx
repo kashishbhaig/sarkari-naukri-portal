@@ -4,17 +4,17 @@ export default function Home() {
   const tests = [
      { 
       id: "AEDO_MOCK_PRACTICES ", 
-      title: "AEDO_MOCK_PRACTICES : PYQ", 
+      title: "AEDO MOCK PRACTICES : PYQ", 
       questions: "100 Qs", 
-      tag: "AEDO_MOCK_PRACTICES ", 
+      tag: "AEDO", 
       color: "from-indigo-500 to-purple-700",
       desc: "High-yield Maths and Reasoning questions for sure-shot selection."
     },
  { 
       id: "NTPC_GS", 
-      title: "NTPC_GS: PYQ", 
+      title: "NTPC GS: PYQ", 
       questions: "916 Qs", 
-      tag: "NTPC_GS", 
+      tag: "NTPC", 
       color: "from-indigo-500 to-purple-700",
       desc: "High-yield Maths and Reasoning questions for sure-shot selection."
     },
