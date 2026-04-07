@@ -2,6 +2,14 @@ import Link from 'next/link';
 
 export default function Home() {
   const tests = [
+     { 
+      id: "AEDO_MOCK_PRACTICES ", 
+      title: "AEDO_MOCK_PRACTICES : PYQ", 
+      questions: "100 Qs", 
+      tag: "AEDO_MOCK_PRACTICES ", 
+      color: "from-indigo-500 to-purple-700",
+      desc: "High-yield Maths and Reasoning questions for sure-shot selection."
+    },
  { 
       id: "NTPC_GS", 
       title: "NTPC_GS: PYQ", 
