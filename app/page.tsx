@@ -3,7 +3,7 @@ import Link from 'next/link';
 export default function Home() {
   const tests = [
      { 
-      id: "AEDO_MOCK_PRACTICES ", 
+      id: "AEDO_MOCK_PRACTICES", 
       title: "AEDO MOCK PRACTICES : PYQ", 
       questions: "100 Qs", 
       tag: "AEDO", 
