@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sarkari Naukari Prayas - Premium Mock Test</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+        .locked-blur { filter: blur(6px); pointer-events: none; user-select: none; }
+        .drawer-open { transform: translateX(0%); }
+        .drawer-closed { transform: translateX(100%); }
+    </style>
+</head>
+<body class="bg-slate-50 font-sans text-slate-800 h-screen flex flex-col overflow-hidden selection:bg-blue-100 selection:text-blue-900 relative">
+
+    <header class="bg-white border-b px-4 py-3 flex justify-between items-center shadow-sm z-30 relative">
+        <div class="flex items-center gap-2">
+            <div class="bg-blue-600 text-white px-3 py-1 rounded font-black text-sm italic">SNP</div>
+            <span class="hidden sm:inline text-[10px] font-black uppercase tracking-widest text-slate-400 border-l pl-2">EXAMS CLEAR VIP</span>
+        </div>
+        <div class="bg-slate-900 text-white px-4 py-1.5 rounded-full font-mono font-black text-sm shadow-md" id="timerDisplay">
+            90:00
+        </div>
+    </header>
+
+    <div class="flex-1 flex flex-col overflow-hidden relative w-full" id="appArea">
+        
+        <div class="bg-slate-50/80 backdrop-blur-sm px-4 md:px-6 py-2 border-b text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] flex justify-between items-center z-20">
+            <span id="qCounter">Question 1 / 25</span>
+            <span>Marks: 1.0</span>
+        </div>
+        
+        <div class="flex-1 p-4 md:p-8 lg:p-12 overflow-y-auto w-full relative z-10" id="questionContainer">
+            <div class="max-w-4xl mx-auto">
+                <h2 class="text-lg md:text-xl font-bold text-slate-800 mb-6 md:mb-8 leading-relaxed" id="questionText">Loading...</h2>
+                <div class="space-y-3 md:space-y-4" id="optionsArea">
+                    </div>
+            </div>
+        </div>
+
+        <div id="lockScreen" class="absolute inset-0 bg-white/90 backdrop-blur-md z-40 hidden flex-col items-center justify-center p-4 text-center overflow-y-auto">
+            <div class="bg-white p-6 md:p-8 rounded-3xl shadow-2xl max-w-md w-full border-t-4 border-orange-500 relative">
+                <div class="text-4xl mb-4">🔒</div>
+                <h2 class="text-xl md:text-2xl font-black text-slate-800 mb-2 uppercase">Test Paused!</h2>
+                <p class="text-xs md:text-sm font-bold text-slate-500 mb-6">You have completed the free 15 questions. To unlock the next 10 questions and view your scorecard, premium access is required.</p>
+                
+                <div class="bg-orange-50 p-4 rounded-xl border border-orange-200 mb-6 text-left">
+                    <p class="text-[10px] font-black text-orange-600 uppercase mb-2">How to Unlock?</p>
+                    <p class="text-xs text-slate-700 font-medium leading-relaxed">1. Buy an Amazon / Flipkart / PhonePe Gift Card of ₹99.<br>2. Send the code to Admin on Telegram.<br>3. Admin will give you the <b>VIP Access Code</b>.</p>
+                    <a href="https://t.me/YOUR_TELEGRAM_ID" target="_blank" class="block text-center mt-3 bg-blue-500 text-white py-2.5 rounded-lg text-xs font-bold hover:bg-blue-600 transition shadow-md">Message Admin on Telegram</a>
+                </div>
+
+                <input type="text" id="accessCodeInput" placeholder="Enter VIP Access Code" class="w-full text-center text-base md:text-lg font-black text-slate-700 bg-slate-100 py-3.5 rounded-xl mb-2 outline-none border-2 border-transparent focus:border-blue-500 uppercase transition-all">
+                <p id="errorText" class="text-xs text-red-500 font-bold mb-4 hidden">Invalid Code! Please check again.</p>
+
+                <button onclick="unlockTest()" class="w-full bg-slate-900 text-white py-3.5 rounded-xl font-black uppercase tracking-widest text-sm hover:bg-orange-500 transition-all shadow-lg active:scale-95">Unlock Test</button>
+            </div>
+        </div>
+        
+        <footer class="p-4 bg-white border-t flex justify-between items-center px-4 md:px-8 z-20 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+            <button onclick="prevQuestion()" class="text-[10px] md:text-xs font-black text-slate-400 hover:text-slate-900 transition-colors uppercase tracking-[0.2em] px-2 py-2">Previous</button>
+            <div class="flex gap-3">
+                <button onclick="clearResponse()" class="hidden sm:block text-[10px] md:text-xs font-black text-red-400 uppercase hover:text-red-600 px-4">Clear</button>
+                <button onclick="nextQuestion()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 md:px-10 py-3 md:py-3.5 rounded-xl font-black text-[10px] md:text-xs uppercase tracking-widest shadow-lg active:scale-95 transition-all">Save & Next</button>
+            </div>
+        </footer>
+    </div>
+
+    <button onclick="togglePalette()" class="fixed bottom-24 right-4 md:right-8 z-40 bg-slate-900 text-white w-14 h-14 md:w-16 md:h-16 rounded-full shadow-2xl flex items-center justify-center border-4 border-slate-50 hover:bg-blue-600 transition-all active:scale-90 group">
+        <svg class="w-6 h-6 md:w-7 md:h-7 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
+        <span id="badgeCount" class="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-black w-6 h-6 rounded-full flex items-center justify-center border-2 border-white shadow-sm">25</span>
+    </button>
+
+    <div id="paletteOverlay" onclick="togglePalette()" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-40 hidden transition-opacity"></div>
+
+    <div id="paletteDrawer" class="fixed top-0 right-0 h-full w-72 md:w-80 bg-white shadow-[-10px_0_30px_rgba(0,0,0,0.1)] z-50 drawer-closed transition-transform duration-300 ease-in-out flex flex-col border-l border-slate-200">
+        <div class="p-5 flex flex-col h-full relative">
+            
+            <button onclick="togglePalette()" class="absolute top-4 right-4 w-8 h-8 bg-slate-100 rounded-full flex items-center justify-center text-slate-500 hover:bg-red-100 hover:text-red-500 transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+
+            <div class="flex items-center gap-3 mb-6 mt-2">
+                <div class="w-10 h-10 bg-blue-600 text-white rounded-xl flex items-center justify-center font-black text-xs shadow-lg">SNP</div>
+                <div><p class="font-black text-xs text-slate-800 leading-none mb-1 uppercase tracking-tighter">Candidate Menu</p><p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Question Palette</p></div>
+            </div>
+
+            <div class="flex-1 overflow-y-auto pr-2 scrollbar-hide">
+                <div class="grid grid-cols-5 gap-2" id="paletteGrid">
+                    </div>
+            </div>
+
+            <div class="pt-4 border-t border-slate-100 mt-4">
+                <button onclick="submitTest()" id="submitBtn" class="w-full bg-slate-200 text-slate-400 py-4 rounded-xl font-black text-[11px] uppercase tracking-[0.2em] transition-all cursor-not-allowed" disabled>Submit Final Exam</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="resultScreen" class="hidden absolute inset-0 bg-slate-50 z-50 overflow-y-auto p-4 md:p-8">
+        <div class="max-w-3xl mx-auto mt-4 md:mt-10 bg-white rounded-3xl shadow-2xl overflow-hidden border">
+            <div class="bg-gradient-to-r from-slate-900 to-blue-900 text-white p-6 md:p-8 text-center relative overflow-hidden">
+                <div class="absolute -right-10 -top-10 w-40 h-40 bg-blue-500 blur-3xl opacity-30 rounded-full"></div>
+                <h1 class="text-2xl md:text-3xl font-black uppercase tracking-widest mb-2 relative z-10">Final Scorecard</h1>
+                <p class="text-blue-200 text-xs md:text-sm font-bold uppercase tracking-widest relative z-10">EXAMS CLEAR Live Assessment</p>
+            </div>
+            <div class="p-6 md:p-10">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center mb-10">
+                    <div class="bg-blue-50 p-4 rounded-2xl border border-blue-100 shadow-sm">
+                        <p class="text-[10px] md:text-xs font-black text-slate-400 uppercase tracking-widest mb-1">Score</p>
+                        <p class="text-3xl font-black text-blue-600" id="resTotal">0</p>
+                    </div>
+                    <div class="bg-green-50 p-4 rounded-2xl border border-green-100 shadow-sm">
+                        <p class="text-[10px] md:text-xs font-black text-slate-400 uppercase tracking-widest mb-1">Correct</p>
+                        <p class="text-3xl font-black text-green-500" id="resCorrect">0</p>
+                    </div>
+                    <div class="bg-red-50 p-4 rounded-2xl border border-red-100 shadow-sm">
+                        <p class="text-[10px] md:text-xs font-black text-slate-400 uppercase tracking-widest mb-1">Wrong</p>
+                        <p class="text-3xl font-black text-red-500" id="resWrong">0</p>
+                    </div>
+                    <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 shadow-sm">
+                        <p class="text-[10px] md:text-xs font-black text-slate-400 uppercase tracking-widest mb-1">Skip</p>
+                        <p class="text-3xl font-black text-slate-600" id="resSkip">0</p>
+                    </div>
+                </div>
+                <button onclick="location.reload()" class="w-full bg-slate-900 hover:bg-orange-500 text-white py-4 md:py-5 rounded-xl font-black uppercase tracking-[0.2em] text-xs md:text-sm transition-all shadow-xl active:scale-95">Return to Dashboard</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Set Your Secret Code Here
+        const SECRET_VIP_CODE = "PRAYASPRO"; 
+
+        // EXACT 25 UPSC Level Questions on Modern History & Gandhi
+        const questions = [
+            { q: "Rowlatt Satyagraha ke sandarbh mein kathanon par vichar karein:\n1. Isne sarkar ko bina trial political prisoners ko detain karne ki power di.\n2. Gandhiji ne iske khilaf Satyagraha Sabha banayi thi.", options: ["Kewal 1 sahi hai", "Kewal 2 sahi hai", "1 aur 2 dono sahi hain", "Na toh 1 na hi 2"], ans: 2 },
+            { q: "Champaran Satyagraha (1917) ke baare mein sahi kathan chunein:\n1. Yeh 'Tinkathia' system ke khilaf tha jismein kisanon ko neel (indigo) ugana padta tha.\n2. Dr. Rajendra Prasad ne is andolan mein Gandhiji ka sath nahi diya tha.", options: ["Kewal 1", "Kewal 2", "1 aur 2 dono", "Na 1 na 2"], ans: 0 },
+            { q: "Asahayoga (Non-Cooperation) Andolan ke dauran, kis ghatna ke karan Gandhiji ne achanak andolan wapas le liya tha?", options: ["Jallianwala Bagh Hatyakand", "Chauri Chaura Kand", "Kakori Train Robbery", "Simon Commission ka aagman"], ans: 1 },
+            { q: "Gandhi-Irwin Pact (1931) ki sharton mein inmein se kya shamil NAHI tha?", options: ["Savinay Avagya Andolan ko rokna", "Political prisoners ki rihai", "Bhagat Singh ki fansi ki saza maaf karna", "Coastal gaon ko namak banane ka adhikar"], ans: 2 },
+            { q: "Gandhiji ne kis Round Table Conference (Golmez Sammelan) mein Indian National Congress ke akele representative ke roop mein hissa liya tha?", options: ["Pehla (1930)", "Dusra (1931)", "Teesra (1932)", "Kisi mein nahi"], ans: 1 },
+            { q: "1932 ka aitihasik Poona Pact kiske beech hastaksharit (signed) hua tha?", options: ["Mahatma Gandhi aur Lord Irwin", "Mahatma Gandhi aur B.R. Ambedkar", "Jawaharlal Nehru aur B.R. Ambedkar", "Mahatma Gandhi aur Winston Churchill"], ans: 1 },
+            { q: "Inmein se kaun si book ya journal Mahatma Gandhi dwara NAHI likhi gayi hai?", options: ["Hind Swaraj", "Young India", "Harijan", "The Discovery of India"], ans: 3 },
+            { q: "Bharat Chhodo Andolan (Quit India Movement) ke dauran, Gandhiji ne kaun sa mashhoor naara (slogan) diya tha?", options: ["Inquilab Zindabad", "Do or Die (Karo ya Maro)", "Dilli Chalo", "Jai Hind"], ans: 1 },
+            { q: "Kheda Satyagraha (1918) ka mukhya karan kya tha?", options: ["Mill workers ke wages ki maang", "Fasal barbad hone par bhi tax vasooli", "Namak par lagaye gaye naye tax ka virodh", "Desi riyasaton ka British rule mein aana"], ans: 1 },
+            { q: "Gandhiji ke 'Constructive Programme' (Rachnatmak Karyakram) ka hissa inmein se kya NAHI tha?", options: ["Khadi ka prachar", "Hindu-Muslim ekta", "Chhuachhoot ka unmoolan", "Hatiyaron (weapons) ki training dena"], ans: 3 },
+            { q: "Aitihasik Dandi March (1930) kahan se shuru hui thi?", options: ["Dandi gaon se", "Sabarmati Ashram se", "Wardha Ashram se", "Bombay se"], ans: 1 },
+            { q: "1923 mein Swaraj Party ki sthapna kisne ki thi?", options: ["Mahatma Gandhi", "Subhas Chandra Bose", "C.R. Das aur Motilal Nehru", "Jawaharlal Nehru aur Sardar Patel"], ans: 2 },
+            { q: "Kaun sa aandoalan Asahayoga Andolan (Non-Cooperation) ke sath milakar chalaya gaya tha?", options: ["Swadeshi Andolan", "Khilafat Andolan", "Bharat Chhodo Andolan", "Home Rule Andolan"], ans: 1 },
+            { q: "Bharat Chhodo Andolan (1942) ke samay Bharat ka Viceroy kaun tha?", options: ["Lord Wavell", "Lord Mountbatten", "Lord Linlithgow", "Lord Irwin"], ans: 2 },
+            { q: "1946 ke Cabinet Mission mein inmein se kaun sadasya (member) NAHI tha?", options: ["Lord Pethick-Lawrence", "Sir Stafford Cripps", "A.V. Alexander", "Lord Mountbatten"], ans: 3 },
+            
+            /* --- FROM HERE, QUESTIONS 16-25 ARE LOCKED BY DEFAULT --- */
+            { q: "Simon Commission (1927) ka Bhartiyon ne virodh kyun kiya tha?", options: ["Kyunki isme dominion status nahi diya gaya", "Kyunki iska ek bhi sadasya Bhartiya nahi tha", "Kyunki isne partition ka prastav rakha tha", "Kyunki isne franchise rights chheen liye the"], ans: 1 },
+            { q: "Gandhiji dwara Bharat mein kiya gaya pehla aam hartal (mass strike) kaun sa tha?", options: ["Champaran", "Rowlatt Satyagraha", "Non-Cooperation", "Civil Disobedience"], ans: 1 },
+            { q: "Mahatma Gandhi ke 'Rajneetik Guru' (Political Guru) kaun mane jate hain?", options: ["Bal Gangadhar Tilak", "Lala Lajpat Rai", "Gopal Krishna Gokhale", "Dadabhai Naoroji"], ans: 2 },
+            { q: "Indian National Congress (INC) ke kis akele adhiveshan (session) ki adhyakshata Gandhiji ne ki thi?", options: ["Lahore (1929)", "Karachi (1931)", "Belgaum (1924)", "Haripura (1938)"], ans: 2 },
+            { q: "Mahatma Gandhi ko pehli baar 'Mahatma' ki upadhi kisne di thi?", options: ["Jawaharlal Nehru", "Subhas Chandra Bose", "Rabindranath Tagore", "Sardar Vallabhbhai Patel"], ans: 2 },
+            { q: "Mahatma Gandhi ko 'Rashtrapita' (Father of the Nation) kisne kaha tha?", options: ["Subhas Chandra Bose", "Rabindranath Tagore", "Winston Churchill", "C. Rajagopalachari"], ans: 0 },
+            { q: "1940 ke Individual Satyagraha mein pehle Satyagrahi kaun the?", options: ["Jawaharlal Nehru", "Sardar Patel", "Vinoba Bhave", "Brahma Datt"], ans: 2 },
+            { q: "Viceroy Linlithgow dwara 'August Offer' kis varsh prastut kiya gaya tha?", options: ["1939", "1940", "1942", "1946"], ans: 1 },
+            { q: "Cripps Mission (1942) mukhya roop se kyun fail hua?", options: ["Usne purna swaraj ki jagah dominion status offer kiya", "Usne Bharat ko 3 hisson me baantne ki baat ki", "Usne Congress par ban laga diya", "Usne samvidhan sabha ko asweekar kar diya"], ans: 0 },
+            { q: "16 August 1946 ko 'Direct Action Day' kiske dwara bulaya gaya tha?", options: ["Indian National Congress", "All India Forward Bloc", "Muslim League", "Hindu Mahasabha"], ans: 2 }
+        ];
+
+        let currentQ = 0;
+        let answers = new Array(25).fill(null);
+        let isUnlocked = false; 
+        let isPaletteOpen = false;
+
+        function togglePalette() {
+            const drawer = document.getElementById('paletteDrawer');
+            const overlay = document.getElementById('paletteOverlay');
+            isPaletteOpen = !isPaletteOpen;
+            if(isPaletteOpen) {
+                drawer.classList.remove('drawer-closed'); drawer.classList.add('drawer-open'); overlay.classList.remove('hidden');
+            } else {
+                drawer.classList.remove('drawer-open'); drawer.classList.add('drawer-closed'); overlay.classList.add('hidden');
+            }
+        }
+
+        function renderApp() {
+            if (currentQ >= 15 && !isUnlocked) {
+                document.getElementById('lockScreen').classList.remove('hidden');
+                document.getElementById('lockScreen').classList.add('flex');
+                document.getElementById('questionContainer').classList.add('locked-blur');
+            } else {
+                document.getElementById('lockScreen').classList.add('hidden');
+                document.getElementById('lockScreen').classList.remove('flex');
+                document.getElementById('questionContainer').classList.remove('locked-blur');
+                
+                document.getElementById('qCounter').innerText = `Question ${currentQ + 1} / 25`;
+                // Add <br> support for lines in question text
+                document.getElementById('questionText').innerHTML = questions[currentQ].q.replace(/\n/g, '<br/>');
+                
+                let optsHTML = '';
+                questions[currentQ].options.forEach((opt, idx) => {
+                    const isSelected = answers[currentQ] === idx;
+                    const bgClass = isSelected ? 'bg-blue-50 border-blue-600 ring-1 ring-blue-600 shadow-md' : 'bg-white hover:bg-slate-50 border-slate-200';
+                    const dotClass = isSelected ? 'border-blue-600 bg-blue-600' : 'border-slate-300 bg-slate-100';
+                    const innerDot = isSelected ? '<div class="w-1.5 h-1.5 bg-white rounded-full"></div>' : '';
+                    const textClass = isSelected ? 'text-blue-700' : 'text-slate-600';
+
+                    optsHTML += `
+                        <label class="flex items-center gap-4 p-4 md:p-5 border-2 rounded-2xl cursor-pointer transition-all ${bgClass}">
+                            <input type="radio" name="opt" class="hidden" onchange="selectOption(${idx})" ${isSelected ? 'checked' : ''}>
+                            <div class="w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${dotClass}">${innerDot}</div>
+                            <span class="text-sm md:text-base font-bold ${textClass}">${opt}</span>
+                        </label>
+                    `;
+                });
+                document.getElementById('optionsArea').innerHTML = optsHTML;
+            }
+
+            renderPalette();
+            updateBadge();
+            checkSubmitStatus();
+        }
+
+        function renderPalette() {
+            let palHTML = '';
+            for(let i=0; i<25; i++) {
+                let statusClass = 'bg-white border-slate-200 text-slate-400 hover:border-slate-300'; 
+                if (answers[i] !== null) statusClass = 'bg-green-500 border-green-500 text-white shadow-sm'; 
+                else if (i === currentQ) statusClass = 'bg-white border-blue-600 ring-2 ring-blue-100 text-blue-600 font-black shadow-md'; 
+
+                let lockIcon = (i >= 15 && !isUnlocked) ? '<span class="text-[9px] absolute -top-1.5 -right-1.5 bg-white rounded-full leading-none p-0.5 shadow-sm">🔒</span>' : '';
+
+                palHTML += `
+                    <button onclick="jumpToQ(${i})" class="h-10 w-10 md:h-11 md:w-11 rounded-xl font-black text-[11px] md:text-xs transition-all flex items-center justify-center border-2 relative ${statusClass}">
+                        ${i + 1} ${lockIcon}
+                    </button>
+                `;
+            }
+            document.getElementById('paletteGrid').innerHTML = palHTML;
+        }
+
+        function updateBadge() {
+            let pending = answers.filter(a => a === null).length;
+            const badge = document.getElementById('badgeCount');
+            badge.innerText = pending;
+            if(pending === 0) { badge.classList.remove('bg-red-500'); badge.classList.add('bg-green-500'); }
+        }
+
+        function selectOption(idx) { answers[currentQ] = idx; renderApp(); }
+        function clearResponse() { answers[currentQ] = null; renderApp(); }
+        function nextQuestion() {
+            if (currentQ < 24) { currentQ++; renderApp(); } 
+            else if(!isPaletteOpen) togglePalette();
+        }
+        function prevQuestion() { if (currentQ > 0) { currentQ--; renderApp(); } }
+        function jumpToQ(idx) { currentQ = idx; renderApp(); if(isPaletteOpen) togglePalette(); }
+
+        function unlockTest() {
+            const userCode = document.getElementById('accessCodeInput').value.trim().toUpperCase();
+            if (userCode === SECRET_VIP_CODE) {
+                isUnlocked = true;
+                document.getElementById('errorText').classList.add('hidden');
+                currentQ = 15; 
+                renderApp();
+            } else {
+                document.getElementById('errorText').classList.remove('hidden');
+            }
+        }
+
+        function checkSubmitStatus() {
+            const submitBtn = document.getElementById('submitBtn');
+            if (isUnlocked) {
+                submitBtn.disabled = false;
+                submitBtn.className = "w-full bg-red-600 hover:bg-red-700 text-white py-4 rounded-xl font-black text-[11px] uppercase tracking-[0.2em] shadow-xl transition-all cursor-pointer shadow-red-500/20";
+            } else {
+                submitBtn.disabled = true;
+                submitBtn.className = "w-full bg-slate-100 text-slate-400 py-4 rounded-xl font-black text-[11px] uppercase tracking-[0.2em] transition-all cursor-not-allowed border-2 border-slate-200 border-dashed";
+            }
+        }
+
+        function submitTest() {
+            if(!confirm("Are you sure you want to submit the final exam?")) return;
+            if(isPaletteOpen) togglePalette();
+            let c = 0, w = 0, s = 0;
+            answers.forEach((ans, idx) => {
+                if (ans === null) s++; else if (ans === questions[idx].ans) c++; else w++;
+            });
+
+            document.getElementById('resTotal').innerText = c;
+            document.getElementById('resCorrect').innerText = c;
+            document.getElementById('resWrong').innerText = w;
+            document.getElementById('resSkip').innerText = s;
+
+            document.getElementById('appArea').classList.add('hidden');
+            document.querySelector('.fixed.bottom-24').classList.add('hidden'); 
+            document.getElementById('resultScreen').classList.remove('hidden');
+        }
+
+        renderApp();
+        let timeLeft = 90 * 60;
+        setInterval(() => {
+            if (timeLeft > 0 && !document.getElementById('resultScreen').classList.contains('hidden')) return;
+            timeLeft--;
+            let m = Math.floor(timeLeft / 60); let s = timeLeft % 60;
+            document.getElementById('timerDisplay').innerText = `${m}:${s < 10 ? '0'+s : s}`;
+        }, 1000);
+    </script>
+</body>
+</html>
