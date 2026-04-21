@@ -1,15 +1,41 @@
 "use client";
 import { useState, useEffect, Suspense } from "react";
-import { useSearchParams } from "next/navigation";
-import Papa from "papaparse";
-import { 
-  PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip 
-} from 'recharts';
+
+// Custom CSV Parser to replace papaparse dependency
+function parseCSV(str) {
+  const arr = [];
+  let quote = false;
+  let row = 0, col = 0;
+  for (let c = 0; c < str.length; c++) {
+    let cc = str[c], nc = str[c+1];
+    arr[row] = arr[row] || [];
+    arr[row][col] = arr[row][col] || '';
+    if (cc === '"' && quote && nc === '"') { arr[row][col] += cc; ++c; continue; }
+    if (cc === '"') { quote = !quote; continue; }
+    if (cc === ',' && !quote) { ++col; continue; }
+    if (cc === '\r' && nc === '\n' && !quote) { ++row; col = 0; ++c; continue; }
+    if (cc === '\n' && !quote) { ++row; col = 0; continue; }
+    if (cc === '\r' && !quote) { ++row; col = 0; continue; }
+    arr[row][col] += cc;
+  }
+  
+  const headers = arr[0] || [];
+  const data = [];
+  for (let i = 1; i < arr.length; i++) {
+    if (arr[i].length === 1 && arr[i][0].trim() === '') continue;
+    const obj = {};
+    for (let j = 0; j < headers.length; j++) {
+      if (headers[j]) {
+        obj[headers[j].trim()] = arr[i][j];
+      }
+    }
+    data.push(obj);
+  }
+  return data;
+}
 
 function TestContent() {
-  const searchParams = useSearchParams();
-  const testId = searchParams.get("id") || "five_year_plans";
-
+  const [testId, setTestId] = useState("five_year_plans");
   const [questions, setQuestions] = useState([]);
   const [currentQ, setCurrentQ] = useState(0);
   const [answers, setAnswers] = useState({});
@@ -20,26 +46,40 @@ function TestContent() {
   const [score, setScore] = useState(0);
   const [loading, setLoading] = useState(true);
   const [resultData, setResultData] = useState({ correct: 0, incorrect: 0, unattended: 0, total: 0 });
-  
   const [isPaletteOpen, setIsPaletteOpen] = useState(false);
 
-  const SHEET_URL = `https://docs.google.com/spreadsheets/d/1eMdE5uhdQXpA73_NO6MwJbMq7x_eI7C38jbqjzP1vtY/gviz/tq?tqx=out:csv&sheet=${testId}`;
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const id = params.get("id");
+      if (id) setTestId(id);
+    }
+  }, []);
 
   useEffect(() => {
     setLoading(true);
-    Papa.parse(SHEET_URL, {
-      download: true,
-      header: true,
-      complete: (results) => {
-        const validQuestions = results.data.filter(q => q.q_hi && q.q_hi.trim() !== "");
+    // Uses the ID to fetch from the specified sheet name
+    const SHEET_URL = `https://docs.google.com/spreadsheets/d/1eMdE5uhdQXpA73_NO6MwJbMq7x_eI7C38jbqjzP1vtY/gviz/tq?tqx=out:csv&sheet=${testId}`;
+
+    fetch(SHEET_URL)
+      .then(res => res.text())
+      .then(csvText => {
+        const parsedData = parseCSV(csvText);
+        const validQuestions = parsedData.filter(q => q.q_hi && q.q_hi.trim() !== "");
         setQuestions(validQuestions);
+        
         const initialStatus = {};
         validQuestions.forEach((_, i) => { initialStatus[i] = 'not_visited'; });
         if(validQuestions.length > 0) initialStatus[0] = 'not_answered';
+        
         setStatus(initialStatus);
         setLoading(false);
-      },
-    });
+      })
+      .catch(err => {
+        console.error("Failed to load sheet data:", err);
+        setLoading(false);
+      });
+
     const timer = setInterval(() => setTimeLeft((prev) => (prev > 0 ? prev - 1 : 0)), 1000);
     return () => clearInterval(timer);
   }, [testId]);
@@ -66,12 +106,6 @@ function TestContent() {
 
   // --- RESULT VIEW (SSC SCORECARD STYLE) ---
   if (isSubmitted) {
-    const pieData = [
-      { name: 'Correct', value: resultData.correct, color: '#22c55e' },
-      { name: 'Wrong', value: resultData.incorrect, color: '#ef4444' },
-      { name: 'Skip', value: resultData.unattended, color: '#94a3b8' },
-    ];
-
     return (
       <div className="min-h-screen bg-slate-100 p-3 md:p-8 font-sans">
         <div className="max-w-5xl mx-auto">
@@ -93,7 +127,7 @@ function TestContent() {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-y-6 gap-x-4 text-[10px] md:text-xs">
                 <div><p className="text-slate-400 font-bold uppercase mb-1">Registration No</p><p className="font-black text-slate-800">SNP-2026-X88</p></div>
                 <div><p className="text-slate-400 font-bold uppercase mb-1">Candidate Name</p><p className="font-black text-slate-800 uppercase italic">Arav Sir Student</p></div>
-                <div><p className="text-slate-400 font-bold uppercase mb-1">Subject</p><p className="font-black text-slate-800 uppercase">{testId.replace('_', ' ')}</p></div>
+                <div><p className="text-slate-400 font-bold uppercase mb-1">Subject</p><p className="font-black text-slate-800 uppercase">{testId.replace(/_/g, ' ')}</p></div>
                 <div><p className="text-slate-400 font-bold uppercase mb-1">Exam Date</p><p className="font-black text-slate-800">{new Date().toLocaleDateString('en-GB')}</p></div>
             </div>
           </div>
@@ -123,7 +157,7 @@ function TestContent() {
                             <td className="p-4 border-r text-green-600">{resultData.correct}</td>
                             <td className="p-4 border-r text-red-500">{resultData.incorrect}</td>
                             <td className="p-4 border-r text-blue-700 bg-blue-50/30 text-lg">{score}.00</td>
-                            <td className="p-4 text-orange-700 bg-orange-50/20">{Math.round((score/questions.length)*100)}%</td>
+                            <td className="p-4 text-orange-700 bg-orange-50/20">{questions.length > 0 ? Math.round((score/questions.length)*100) : 0}%</td>
                         </tr>
                     </tbody>
                 </table>
@@ -148,25 +182,32 @@ function TestContent() {
                   </div>
                 </div>
 
-                <p className="font-bold text-slate-800 mb-6 text-sm md:text-base leading-relaxed">
-                  {q?.[`q_${lang}`]}
-                </p>
+                <p 
+                  className="font-bold text-slate-800 mb-6 text-sm md:text-base leading-relaxed" 
+                  dangerouslySetInnerHTML={{ __html: q?.[`q_${lang}`] || '' }} 
+                />
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
                   <div className={`p-4 rounded-lg border-2 ${answers[i] === q.correctAnswer ? 'bg-green-50/50 border-green-200' : 'bg-red-50/50 border-red-100'}`}>
                     <p className="text-[9px] font-black text-slate-400 uppercase mb-2">Student Response</p>
-                    <p className="font-bold">{answers[i] ? `${answers[i]}. ${q?.[`${answers[i].toLowerCase()}_${lang}`]}` : <span className="italic text-slate-300">Skipped</span>}</p>
+                    <p className="font-bold">
+                      {answers[i] ? (
+                        <span dangerouslySetInnerHTML={{ __html: `${answers[i]}. ${q?.[`${answers[i].toLowerCase()}_${lang}`] || ''}` }} />
+                      ) : (
+                        <span className="italic text-slate-300">Skipped</span>
+                      )}
+                    </p>
                   </div>
                   <div className="p-4 rounded-lg border-2 border-blue-100 bg-blue-50/50">
                     <p className="text-[9px] font-black text-blue-400 uppercase mb-2">Verified Answer</p>
-                    <p className="font-bold text-blue-800">{q.correctAnswer}. {q?.[`${q.correctAnswer.toLowerCase()}_${lang}`]}</p>
+                    <p className="font-bold text-blue-800" dangerouslySetInnerHTML={{ __html: `${q.correctAnswer}. ${q?.[`${q.correctAnswer?.toLowerCase()}_${lang}`] || ''}` }} />
                   </div>
                 </div>
 
                 {q.explanation && (
                   <div className="mt-4 p-4 bg-slate-50 rounded-lg border-l-4 border-slate-300">
                     <p className="text-[9px] font-black text-slate-400 uppercase mb-1">Explanation</p>
-                    <p className="text-xs text-slate-600 font-medium italic">{q.explanation}</p>
+                    <p className="text-xs text-slate-600 font-medium italic" dangerouslySetInnerHTML={{ __html: q.explanation }} />
                   </div>
                 )}
               </div>
@@ -211,23 +252,36 @@ function TestContent() {
           </div>
           
           <div className="flex-1 p-6 lg:p-12 overflow-y-auto">
-            <div className="max-w-3xl mx-auto">
-                <h2 className="text-lg md:text-2xl font-bold text-slate-800 mb-8 leading-snug">
-                {q?.[`q_${lang}`]}
-                </h2>
-                <div className="space-y-3">
-                {['a', 'b', 'c', 'd'].map(opt => (
-                    <label key={opt} className={`group flex items-center gap-4 p-5 border-2 rounded-2xl cursor-pointer transition-all duration-200 ${answers[currentQ] === opt.toUpperCase() ? 'bg-blue-50 border-blue-600 shadow-md ring-1 ring-blue-600' : 'hover:bg-slate-50 border-slate-100 hover:border-slate-300'}`}>
-                    <input type="radio" checked={answers[currentQ] === opt.toUpperCase()} onChange={() => setAnswers({...answers, [currentQ]: opt.toUpperCase()})} className="hidden" />
-                    <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${answers[currentQ] === opt.toUpperCase() ? 'border-blue-600 bg-blue-600' : 'border-slate-200 bg-white'}`}>
-                        {answers[currentQ] === opt.toUpperCase() && <div className="w-1.5 h-1.5 bg-white rounded-full" />}
-                    </div>
-                    <span className={`text-xs font-black ${answers[currentQ] === opt.toUpperCase() ? 'text-blue-600' : 'text-slate-300'}`}>{opt.toUpperCase()}.</span>
-                    <span className="text-sm md:text-base font-bold text-slate-600 group-hover:text-slate-900 transition-colors">{q?.[`${opt}_${lang}`]}</span>
-                    </label>
-                ))}
-                </div>
-            </div>
+            {q ? (
+              <div className="max-w-3xl mx-auto">
+                  <h2 
+                    className="text-lg md:text-2xl font-bold text-slate-800 mb-8 leading-snug"
+                    dangerouslySetInnerHTML={{ __html: q?.[`q_${lang}`] || '' }}
+                  />
+                  
+                  <div className="space-y-3">
+                  {['a', 'b', 'c', 'd'].map(opt => {
+                      if (!q?.[`${opt}_${lang}`]) return null;
+                      return (
+                        <label key={opt} className={`group flex items-center gap-4 p-5 border-2 rounded-2xl cursor-pointer transition-all duration-200 ${answers[currentQ] === opt.toUpperCase() ? 'bg-blue-50 border-blue-600 shadow-md ring-1 ring-blue-600' : 'hover:bg-slate-50 border-slate-100 hover:border-slate-300'}`}>
+                        <input type="radio" checked={answers[currentQ] === opt.toUpperCase()} onChange={() => setAnswers({...answers, [currentQ]: opt.toUpperCase()})} className="hidden" />
+                        <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${answers[currentQ] === opt.toUpperCase() ? 'border-blue-600 bg-blue-600' : 'border-slate-200 bg-white'}`}>
+                            {answers[currentQ] === opt.toUpperCase() && <div className="w-1.5 h-1.5 bg-white rounded-full" />}
+                        </div>
+                        <span className={`text-xs font-black ${answers[currentQ] === opt.toUpperCase() ? 'text-blue-600' : 'text-slate-300'}`}>{opt.toUpperCase()}.</span>
+                        
+                        <span 
+                          className="text-sm md:text-base font-bold text-slate-600 group-hover:text-slate-900 transition-colors"
+                          dangerouslySetInnerHTML={{ __html: q?.[`${opt}_${lang}`] || '' }}
+                        />
+                        </label>
+                      )
+                  })}
+                  </div>
+              </div>
+            ) : (
+              <div className="text-center text-slate-500 font-bold">No questions found in this sheet. Please check the ID or URL parameters.</div>
+            )}
           </div>
           
           {/* FOOTER */}
