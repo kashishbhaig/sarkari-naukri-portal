@@ -2,6 +2,14 @@ import Link from 'next/link';
 
 export default function Home() {
   const tests = [
+    { 
+      id: "FULL MOCK (THE LIVING WORLD)", 
+      title: "FULL MOCK (THE LIVING WORLD)", 
+      questions: "100 Qs", 
+      tag: "NCERT CLASS 11 BIO ", 
+      color: "from-indigo-500 to-purple-700",
+      desc: "High-yield Maths and Reasoning questions for sure-shot selection."
+    },
      { 
       id: "AEDO_MOCK_PRACTICES", 
       title: "AEDO MOCK PRACTICES : PYQ", 
